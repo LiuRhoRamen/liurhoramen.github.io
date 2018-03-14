@@ -3,14 +3,23 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Hexo</title>
+  <title>GraphQL &amp; Relay 初探 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="距离Facebook发布新版Relay（Relay Modern）已经快一年时间了，但相关的中文资料与实践案例依然不是很多。究其原因，可能和官方文档不够详细有关。本文通过对GraphQL与Relay的浅析，希望能降低其上手难度，同时也便于判断，自己的业务是否适合使用Relay框架。 GraphQLGraphQL是一套独立的数据查询系统，关于它的介绍与使用，官方网站已有比较详细的介绍，同时，现在已">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GraphQL &amp; Relay 初探">
+<meta property="og:url" content="http://yoursite.com/2018/03/12/GraphQL-Relay/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="距离Facebook发布新版Relay（Relay Modern）已经快一年时间了，但相关的中文资料与实践案例依然不是很多。究其原因，可能和官方文档不够详细有关。本文通过对GraphQL与Relay的浅析，希望能降低其上手难度，同时也便于判断，自己的业务是否适合使用Relay框架。 GraphQLGraphQL是一套独立的数据查询系统，关于它的介绍与使用，官方网站已有比较详细的介绍，同时，现在已">
+<meta property="og:image" content="http://yoursite.com/2018/03/12/GraphQL-Relay/graph.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/12/GraphQL-Relay/graph-2.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/12/GraphQL-Relay/graph-3.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/12/GraphQL-Relay/graph-4.png">
+<meta property="og:updated_time" content="2018-03-14T14:52:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="GraphQL &amp; Relay 初探">
+<meta name="twitter:description" content="距离Facebook发布新版Relay（Relay Modern）已经快一年时间了，但相关的中文资料与实践案例依然不是很多。究其原因，可能和官方文档不够详细有关。本文通过对GraphQL与Relay的浅析，希望能降低其上手难度，同时也便于判断，自己的业务是否适合使用Relay框架。 GraphQLGraphQL是一套独立的数据查询系统，关于它的介绍与使用，官方网站已有比较详细的介绍，同时，现在已">
+<meta name="twitter:image" content="http://yoursite.com/2018/03/12/GraphQL-Relay/graph.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,9 +68,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-GraphQL-Relay" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-GraphQL-Relay" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/03/12/GraphQL-Relay/" class="article-date">
   <time datetime="2018-03-12T03:01:57.000Z" itemprop="datePublished">2018-03-12</time>
@@ -74,8 +81,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/12/GraphQL-Relay/">GraphQL &amp; Relay 初探</a>
+    <h1 class="article-title" itemprop="name">
+      GraphQL &amp; Relay 初探
     </h1>
   
 
@@ -127,55 +134,19 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/29/hello-world/" class="article-date">
-  <time datetime="2017-10-29T14:43:10.248Z" itemprop="datePublished">2017-10-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/29/hello-world/">Hello World</a>
-    </h1>
+    <a href="/2017/10/29/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjer77psv00018u029ecmk7wp" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-  
 
 </section>
         

@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -83,7 +83,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>距离Facebook发布新版Relay（Relay Modern）已经快一年时间了，但相关的中文资料与实践案例依然不是很多。究其原因，可能和官方文档不够详细有关。本文通过对GraphQL与Relay的浅析，希望能降低其上手难度，同时也便于判断，自己的业务是否适合使用Relay框架。</p>
+        <p>距离Facebook发布新版Relay（Relay Modern）已经快一年时间了，但相关的中文资料与实践案例依然不是很多。究其原因，可能和官方文档不够详细有关。本文通过对GraphQL与Relay的浅析，希望能降低其上手难度，同时也便于判断，自己的业务是否适合使用Relay框架。<br>另外，如果希望能快速构建起Relay的Web应用，可以上github克隆<a href="git@github.com:LiuRhoRamen/relay-boilerplate.git">Relay应用模版</a>，里面整合了前后端和路由，基本能满足常见App的需求。</p>
 <h2 id="GraphQL"><a href="#GraphQL" class="headerlink" title="GraphQL"></a>GraphQL</h2><p>GraphQL是一套独立的数据查询系统，关于它的介绍与使用，<a href="http://graphql.org/" target="_blank" rel="external">官方网站</a>已有比较详细的介绍，同时，现在已有<a href="http://graphql.cn/" target="_blank" rel="external">中文版</a>可以参考。对于基本概念，建议直接阅读官网，本文不做详细介绍。</p>
 <h3 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h3><p>之所以名称中包含有Graph，是因为GraphQL采用了图结构的查询方式。以一个例子来看：<br>我们想要设计一个公司的内部人员管理系统，假设一种最简单的场景，至少会包含部门和员工两大信息。以图的结构来表示他们的关系的话，可能会是这样：<br><img src="/2018/03/12/GraphQL-Relay/graph.png" title="图结构示例-1"><br>回顾常用的系统会发现，基本都可以通过图来描述角色关系。这里，我们可以类比<strong>图数据库</strong>的概念。由于图的结构更接近于自然世界，相比关系型数据库，在设计图数据库时，会省去一个图结构向关系型结构的转化工作。关于图数据库的更多介绍，可以参考<a href="https://neo4j.com/developer/graph-db-vs-rdbms/" target="_blank" rel="external">neo4j的介绍</a>。<br>回到上图，假设我们现在要查询员工L某的详细信息，用GraphQL，可以这样来请求（为更加直观，这里以中文来表示）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工(ID: &quot;022&quot;) &#123;</div><div class="line">    姓名</div><div class="line">    职位</div><div class="line">    所属部门 &#123;</div><div class="line">      名称</div><div class="line">    &#125;</div><div class="line">    同事 &#123;</div><div class="line">      ID</div><div class="line">      姓名</div><div class="line">      职位</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>正常情况下，服务端返回的结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工 &#123;</div><div class="line">    姓名: &quot;L某&quot;,</div><div class="line">    职位: &quot;员工&quot;,</div><div class="line">    所属部门：&#123;</div><div class="line">      名称: &quot;前端部&quot;</div><div class="line">    &#125;</div><div class="line">    同事：[</div><div class="line">      &#123;</div><div class="line">        ID: &quot;022&quot;,</div><div class="line">        姓名: &quot;S某&quot;,</div><div class="line">        职位: &quot;经理&quot;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        ID: &quot;033&quot;,</div><div class="line">        姓名: &quot;Y某&quot;,</div><div class="line">        职位: &quot;总监&quot;</div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
@@ -121,7 +121,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cjer77psp00008u0255z56wyh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cjes8t7gy0000q702kf8s1509" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -166,7 +166,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjer77psv00018u029ecmk7wp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjes8t7h30001q702whoaggm1" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -201,7 +201,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
         
@@ -226,7 +226,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

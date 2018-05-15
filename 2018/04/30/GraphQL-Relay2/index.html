@@ -3,14 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Hexo</title>
+  <title>GraphQL &amp; Relay 实战 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="前段时间，分享了一篇GraphQL &amp;amp; Relay 初探，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。 架构&amp;amp;角色分工对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GraphQL &amp; Relay 实战">
+<meta property="og:url" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前段时间，分享了一篇GraphQL &amp;amp; Relay 初探，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。 架构&amp;amp;角色分工对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/01.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/02.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/03.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/05.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/04.png">
+<meta property="og:updated_time" content="2018-05-15T17:05:31.254Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="GraphQL &amp; Relay 实战">
+<meta name="twitter:description" content="前段时间，分享了一篇GraphQL &amp;amp; Relay 初探，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。 架构&amp;amp;角色分工对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组">
+<meta name="twitter:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/01.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,9 +69,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-GraphQL-Relay2" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-GraphQL-Relay2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/04/30/GraphQL-Relay2/" class="article-date">
   <time datetime="2018-04-30T12:04:59.000Z" itemprop="datePublished">2018-04-30</time>
@@ -74,8 +82,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/30/GraphQL-Relay2/">GraphQL &amp; Relay 实战</a>
+    <h1 class="article-title" itemprop="name">
+      GraphQL &amp; Relay 实战
     </h1>
   
 
@@ -112,125 +120,19 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-GraphQL-Relay" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/03/12/GraphQL-Relay/" class="article-date">
-  <time datetime="2018-03-12T03:01:57.000Z" itemprop="datePublished">2018-03-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/12/GraphQL-Relay/">GraphQL &amp; Relay 初探</a>
-    </h1>
+    <a href="/2018/03/12/GraphQL-Relay/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GraphQL &amp; Relay 初探</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>距离Facebook发布新版Relay（Relay Modern）已经快一年时间了，但相关的中文资料与实践案例依然不是很多。究其原因，可能和官方文档不够详细有关。本文通过对GraphQL与Relay的浅析，希望能降低其上手难度，同时也便于判断，自己的业务是否适合使用Relay框架。<br>什么？直接上代码？猴~可以上github克隆<a href="https://github.com/LiuRhoRamen/relay-boilerplate" target="_blank" rel="external">Relay应用模版</a>，里面整合了前后端和路由，基本能满足常见App的需求。</p>
-<h2 id="GraphQL"><a href="#GraphQL" class="headerlink" title="GraphQL"></a>GraphQL</h2><p>GraphQL是一套独立的数据查询系统，关于它的介绍与使用，<a href="http://graphql.org/" target="_blank" rel="external">官方网站</a>已有比较详细的介绍，同时，现在已有<a href="http://graphql.cn/" target="_blank" rel="external">中文版</a>可以参考。对于基本概念，建议直接阅读官网，本文不做详细介绍。</p>
-<h3 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h3><p>之所以名称中包含有Graph，是因为GraphQL采用了图结构的查询方式。以一个例子来看：<br>我们想要设计一个公司的内部人员管理系统，假设一种最简单的场景，至少会包含部门和员工两大信息。以图的结构来表示他们的关系的话，可能会是这样：<br><img src="/2018/03/12/GraphQL-Relay/graph.png" title="图结构示例-1"><br>回顾常用的系统会发现，基本都可以通过图来描述角色关系。这里，我们可以类比<strong>图数据库</strong>的概念。由于图的结构更接近于自然世界，相比关系型数据库，在设计图数据库时，会省去一个图结构向关系型结构的转化工作。关于图数据库的更多介绍，可以参考<a href="https://neo4j.com/developer/graph-db-vs-rdbms/" target="_blank" rel="external">neo4j的介绍</a>。<br>回到上图，假设我们现在要查询员工L某的详细信息，用GraphQL，可以这样来请求（为更加直观，这里以中文来表示）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工(ID: &quot;022&quot;) &#123;</div><div class="line">    姓名</div><div class="line">    职位</div><div class="line">    所属部门 &#123;</div><div class="line">      名称</div><div class="line">    &#125;</div><div class="line">    同事 &#123;</div><div class="line">      ID</div><div class="line">      姓名</div><div class="line">      职位</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>正常情况下，服务端返回的结果是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工 &#123;</div><div class="line">    姓名: &quot;L某&quot;,</div><div class="line">    职位: &quot;员工&quot;,</div><div class="line">    所属部门：&#123;</div><div class="line">      名称: &quot;前端部&quot;</div><div class="line">    &#125;</div><div class="line">    同事：[</div><div class="line">      &#123;</div><div class="line">        ID: &quot;022&quot;,</div><div class="line">        姓名: &quot;S某&quot;,</div><div class="line">        职位: &quot;经理&quot;</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        ID: &quot;033&quot;,</div><div class="line">        姓名: &quot;Y某&quot;,</div><div class="line">        职位: &quot;总监&quot;</div><div class="line">      &#125;</div><div class="line">    ]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>可以看到，根据查询请求，员工的信息以Json的格式全部返回出来了。对应到图中，其实是提取了蓝色的这部分信息：<br><img src="/2018/03/12/GraphQL-Relay/graph-2.png" title="图结构示例-2"><br>查询以员工（L某）为起点，沿着边，将所需的关联数据提取出来，形成了最终的返回的结果。由此可以看出，GraphQL所做的，其实是将<strong>图结构的数据提取出成为一个树状结构</strong>。为了更清晰的体现这一点，我们将蓝色部分单独取出来，并稍稍换一下节点的位置：<br><img src="/2018/03/12/GraphQL-Relay/graph-3.png" title="图结构示例-3"><br>这里，可能会有个疑问：这样查询出的树状结构，必然要求涉及的节点之间有边。<strong>如果我想要同时查询两个节点的信息，但它们间没有边，那该怎么办呢？</strong><br>仍以之前的例子来看，如果我想查询员工L某和设计部的信息，但它们之间没有边。这种时候，可以构建一个虚拟的节点，并以它为起点，连接起其他需要查询的节点。大概会是这样的一种结构：<br><img src="/2018/03/12/GraphQL-Relay/graph-4.png" title="图结构示例-4"><br>查询结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工(ID: &quot;022&quot;) &#123;</div><div class="line">    姓名</div><div class="line">    职位</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">  部门(名称: &quot;设计部&quot;) &#123;</div><div class="line">    名称</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>返回结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工 &#123;</div><div class="line">    姓名: &quot;L某&quot;,</div><div class="line">    职位: &quot;员工&quot;,</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">  部门 &#123;</div><div class="line">    名称: &quot;设计部&quot;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在实际的应用开发中，也通常采用以上这样的设计结构。<br>到此，我们来总结一下。GraphQL通过查询语句，将图结构的数据，提取成了树状结构作为结果返回。这里的图结构的数据，对应的便是GraphQL的<a href="http://graphql.org/learn/schema/" target="_blank" rel="external">类型系统</a>。而如何将图中的节点，也就是定义的各个类型相互关联，需要通过具体的逻辑代码来实现。官方和社区也提供了各种语言的<a href="http://graphql.org/code/" target="_blank" rel="external">GraphQL库</a>。<br>那么还有个问题，<strong>如果我想修改数据该怎么办呢？</strong>为解决这个问题，GraphQL引入了Mutation的概念。我们可以把Mutation看作是一种特殊的查询，你需要为它定义名称、参数、返回数据，并在具体的代码逻辑中，完成它的具体数据操作。详细可以参考<a href="http://graphql.org/learn/queries/" target="_blank" rel="external">官方文档</a>。</p>
-<h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><p>官方网站简单介绍了GraphQL的一些优点，不过，你可能更想知道，相比其他的API设计模式，GraphQL有什么优势呢？根据我实践下来的理解，GraphQL主要解决了面向前端的API在开发和后期维护中，常会遇到的一些矛盾点。下面，我们以RESTful API为参照，来具体看一下。</p>
-<h4 id="灵活性"><a href="#灵活性" class="headerlink" title="灵活性"></a>灵活性</h4><p>再来看上一节的例子，像获取员工全部信息这样的场景在应用开发中还是比较常见的，如果换成RESTful的API，会是怎么样的呢？我想，一般会有两种做法：</p>
-<ul>
-<li>1、单独的API来拉取全部信息；</li>
-<li>2、将“同事”、“部门”这些信息作为独立的API，在前端通过多条API来组合。</li>
-</ul>
-<p>我们先看第一种做法。这种方式有几点明显的弊端：首先是信息的冗余。如果我在其他地方只需要显示员工基础信息，不包含具体的部门或同事信息，那就存在了数据的冗余。其次，从后端角度，会带来维护上的成本。由于前端的展示需求相对多变，很可能会造成许多不再使用的API，而这些API又往往不敢轻易移除。又或者，在新需求中，很可能会新增与现有API重复度较高的API，造成后端业务代码的冗余。再者，即使考虑通过参数的方式，能使得返回值有可选择性，确实可以增加一定的灵活度，但又不可避免的增加了参数的复杂性。<br>再看第二种做法。通过这种细粒度的模块划分方式，相对第一种来说，减轻了后端代码的维护成本，但却对前端极不友好。比如，一个列表中的某个字段，后端只提供了单独查询的方式，当列表数据量特别大的时候，请求数也大大增加，将直接影响前端性能与用户体验。此外，大量的异步请求无疑增加了前端代码复杂度，从而提高了前端的维护成本。<br>而GraphQL只需要定义好类型及对应的数据处理方式，暴露给查询根节点，前端可以随意按需请求，很好的解决了以上的矛盾。</p>
-<h4 id="前端友好性"><a href="#前端友好性" class="headerlink" title="前端友好性"></a>前端友好性</h4><p>GraphQL用来作为BFF层（Backend For Frontend）有其先天的优势，最主要在于其面向前端的友好性设计。<br>除了上面提到的，在查询请求中，请求数的减少对前端体验上的提升之外，Mutation同样减少了请求次数。在Restful API中，除了GET请求，其它的请求完成后，前端通常还需要再发出一个GET请求，来拉取变更后的数据。如果在返回结果中，为前端的显示界面而增加了一部分数据，又会破坏后端代码的可复用性。而在GraphQL的Mutation中，返回的数据完全可以根据前端界面的数据需求来决定，而且只需一次请求即可。结合Relay框架，还可以定义<strong>理想化更新</strong>来减少Loading界面出现的次数，进一步提高用户体验。（这一点会在下一节具体展开）</p>
-<h4 id="降低沟通成本"><a href="#降低沟通成本" class="headerlink" title="降低沟通成本"></a>降低沟通成本</h4><p>在当下流行的前后端分离开发模式下，前后端开发者的沟通成本也是影响项目进度的一大要素。通常，为了降低沟通成本，后端开发者需要提前定义API文档，前端会根据API文档来MOCK数据以开发前端界面。后端开发者还需要通过各种工具，如PostMan来进行测试。在前后端完成开发后，还需要做联调对接。<br>对于GraphQL来说，<a href="http://graphql.org/learn/schema/" target="_blank" rel="external">schema</a>自身就是很好的文档。同时，官方还提供了一个类似于PostMan的工具<a href="https://github.com/graphql/graphiql" target="_blank" rel="external">GraphiQL</a>，可以有助于开发中的调试。</p>
-<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>GraphQL与Relay框架结合后，还能发挥出更大优势，比如前后端一致的类型校验、前端缓存等，具体请看下一节内容。</p>
-<h2 id="Relay"><a href="#Relay" class="headerlink" title="Relay"></a>Relay</h2><p>Relay是一套基于GraphQL和React的框架，它将这两者结合，在原来React组件的基础上，进一步将<strong>请求</strong>封装进组件。官方提供了一个TodoMVC的<a href="https://github.com/relayjs/relay-examples/tree/master/todo" target="_blank" rel="external">demo</a>可以参考，基本涵盖了CRUD操作。</p>
-<h3 id="QueryRenderer"><a href="#QueryRenderer" class="headerlink" title="QueryRenderer"></a>QueryRenderer</h3><p>Relay框架提供了<a href="https://facebook.github.io/relay/docs/en/query-renderer.html" target="_blank" rel="external">QueryRenderer</a>这样一个高阶组件（HOC）来封装React组件和GraphQL请求。这个组件接受四个Props：<a href="https://facebook.github.io/relay/docs/en/relay-environment.html" target="_blank" rel="external">environment</a>、query、variables以及render。<br>environment需要配置<a href="https://facebook.github.io/relay/docs/en/network-layer.html" target="_blank" rel="external">网络请求</a>和<a href="https://facebook.github.io/relay/docs/en/relay-store.html" target="_blank" rel="external">Store</a>；query接受的便是GraphQL请求；variables接受GraphQL请求中需要的变量，最后render用来定义组件的渲染。<br>假设我们要开发一个显示员工基本信息的Relay组件，那么它可能会是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;QueryRenderer </div><div class="line">  environment=&#123;environment&#125;</div><div class="line">  query=&#123;graphql`</div><div class="line">    query StaffQuery($id: ID!) &#123;</div><div class="line">      员工(ID: $id) &#123;</div><div class="line">        ID</div><div class="line">        姓名</div><div class="line">        职位</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  `&#125;</div><div class="line">  variables=&#123;&#123; id: &apos;011&apos; &#125;&#125;</div><div class="line">  render=&#123;(&#123;error, props&#125;) =&gt; &#123;</div><div class="line">    if (error) &#123;</div><div class="line">      return &lt;div&gt;&#123;error.message&#125;&lt;/div&gt;;</div><div class="line">    &#125; else if (props) &#123;</div><div class="line">      return &lt;div&gt;工号：&#123;props[&quot;员工&quot;][&quot;ID&quot;]&#125;；姓名：&#123;props[&quot;员工&quot;][&quot;姓名&quot;]&#125;；职位：&#123;props[&quot;员工&quot;][&quot;职位&quot;]&#125;；&lt;/div&gt;;</div><div class="line">    &#125;</div><div class="line">      return &lt;div&gt;Loading...&lt;/div&gt;;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">/&gt;</div></pre></td></tr></table></figure></p>
-<h3 id="Fragment"><a href="#Fragment" class="headerlink" title="Fragment"></a>Fragment</h3><p>现在我们已有了一个展示员工基本信息的组件，如果我们现在要在这个组件的基础上，进一步封装出一个员工列表的组件，该怎么办呢？<br>参照React组件的方式，可以创建一个新的组件，接收一个包含员工ID数组的props，在这个新的组件内部，根据ID数组Map多个员工信息的Relay组件。<br>这样似乎可以，但问题是，如果有10个ID，那这样一个组件也就会发出10个GraphQL请求，显然违背了GraphQL的设计理念。<br>当然也可以创建一个新的Relay组件：query中直接请求一组员工数据，渲染出列表。但这样就失去了组件的复用性，因为很显然，这个新组件中，显示每条员工信息的逻辑和样式，跟单个员工信息的组件是一致的。<br>这里，Relay提供了一个<a href="https://facebook.github.io/relay/docs/en/fragment-container.html" target="_blank" rel="external">Fragment</a>的HOC组件，它接受两个Props：component和fragmentSpec。<br>component接受React组件，用来处理具体的组件视图和逻辑；fragmentSpec则是接受一段<a href="http://graphql.org/learn/queries/#fragments" target="_blank" rel="external">GraphQL Fragment</a>。所谓Fragment，对应到上一节的图中，就是节点的某一部分。比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">fragment 员工信息 on 员工 &#123;</div><div class="line">  ID</div><div class="line">  姓名</div><div class="line">  职位</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在请求中，就可以这样引入Fragment：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  员工(ID: &quot;022&quot;) &#123;</div><div class="line">    ...员工信息</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>那么回到Relay中，可以这样创建一个员工信息的Fragment组件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">createFragmentContainer(</div><div class="line">  class 员工信息 extends React.Component &#123;</div><div class="line">    render() &#123;</div><div class="line">      return &lt;div&gt;工号：&#123;this.props.data[&quot;员工&quot;][&quot;ID&quot;]&#125;；姓名：&#123;this.props.data[&quot;员工&quot;][&quot;姓名&quot;]&#125;；职位：&#123;this.props.data[&quot;员工&quot;][&quot;职位&quot;]&#125;；&lt;/div&gt;;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  graphql`</div><div class="line">    fragment 员工信息 on 员工 &#123;</div><div class="line">      ID</div><div class="line">      姓名</div><div class="line">      职位</div><div class="line">    &#125;</div><div class="line">  `,</div><div class="line">)</div></pre></td></tr></table></figure></p>
-<p>有了这样一个员工信息的Fragment组件后，我们可以再创建员工信息列表的组件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&lt;QueryRenderer </div><div class="line">  environment=&#123;environment&#125;</div><div class="line">  query=&#123;graphql`</div><div class="line">    query StaffListQuery($ids: [ID]!) &#123;</div><div class="line">      员工(IDs: $ids) &#123;</div><div class="line">        ...员工信息</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  `&#125;</div><div class="line">  variables=&#123;&#123; id: [&apos;011&apos;, &apos;022&apos;, &apos;033&apos;] &#125;&#125;</div><div class="line">  render=&#123;(&#123;error, props&#125;) =&gt; &#123;</div><div class="line">    if (error) &#123;</div><div class="line">      return &lt;div&gt;&#123;error.message&#125;&lt;/div&gt;;</div><div class="line">    &#125; else if (props) &#123;</div><div class="line">      return &lt;员工信息 data=&#123;this.props.data&#125; /&gt;;</div><div class="line">    &#125;</div><div class="line">      return &lt;div&gt;Loading...&lt;/div&gt;;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">/&gt;</div></pre></td></tr></table></figure></p>
-<p>这样一来，组件实际的请求还是只有一条，但员工信息的组件得到了成功复用，如果在其他组件中，需要显示员工信息，也同样只需要将该Fragment组件引入即可。除了基本的Fragment Container，Relay还提供了<a href="https://facebook.github.io/relay/docs/en/refetch-container.html" target="_blank" rel="external">Refetch Container</a>和<a href="https://facebook.github.io/relay/docs/en/pagination-container.html" target="_blank" rel="external">Pagination Container</a>组件，前者在原Fragment组件的基础上，注入了<strong>refetch</strong>方法，以便满足组件需要更新数据的场景（如：用户主动点击数据列表的刷新按钮）；而后者，则添加了若干分页的操作，这里就不具体展开了。</p>
-<h3 id="Relay-Store"><a href="#Relay-Store" class="headerlink" title="Relay Store"></a>Relay Store</h3><p>在QueryRenderer中配置的environment里面，主要包含的是网络请求和Store。这里的Store于<a href="https://redux.js.org/" target="_blank" rel="external">Redux</a>的Store不太一致。Redux中主要用来统一管理组件的State，而Relay Store则记录的是Record。这里的Record，其实就是GraphQL的每个Type，或者对应于上一节的图中的每个节点。<br>当Relay框架收到GraphQL返回的数据后，会为每一个节点数据记录一个ID，并在Relay Store中存为一个Record。同时，Relay也为这些Record提供了CRUD的方法。具体可以参考<a href="https://facebook.github.io/relay/docs/en/relay-store.html" target="_blank" rel="external">官方文档</a>。</p>
-<h3 id="Mutations"><a href="#Mutations" class="headerlink" title="Mutations"></a>Mutations</h3><p>为了便于在组件中发起GraphQL Mutation操作，Relay提供了<a href="https://facebook.github.io/relay/docs/en/mutations.html" target="_blank" rel="external">commitMutation</a>方法。除了发起Mutation之外，利用Relay Store，可以方便的定位页面数据并进行更新，还能够实现<a href="https://facebook.github.io/relay/docs/en/mutations.html#optmistic-updates" target="_blank" rel="external">理想更新</a>，进一步提升用户体验。</p>
-<h3 id="优势-1"><a href="#优势-1" class="headerlink" title="优势"></a>优势</h3><p>到这里，基本已经涵盖了Relay的全部功能。从上文可以看出，在GraphQL原有的优势基础上，Relay还带来了以下两点优势：</p>
-<ul>
-<li>1、实现了数据查询与组件的结合，进一步提高了前端模块化程度，提高组件复用性。</li>
-<li>2、优秀的客户端缓存，提升用户体验。</li>
-</ul>
-<p>除此之外，结合<a href="https://flow.org/" target="_blank" rel="external">Flow</a>框架的类型检测，Relay可以很好地根据后端提供的schema做类型校验，避免一些潜在的Bug。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过以上的介绍和分析，相信你对GraphQL与Relay已经有了大致的了解，我认为，Relay比较适合的场景，是那种前端数据展示类别众多，且变化较大的应用，比如社交网站。但具体是否在项目中应用，还是需要结合需求实际来决定。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://dev-blog.apollodata.com/the-concepts-of-graphql-bc68bd819be3" target="_blank" rel="external">GraphQL Concepts Visualized</a><br><a href="https://segmentfault.com/a/1190000004586237" target="_blank" rel="external">GraphQL and Relay 浅析</a><br></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cjh7xj8qh0001za02vy191fqd" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/10/29/hello-world/" class="article-date">
-  <time datetime="2017-10-29T14:43:10.249Z" itemprop="datePublished">2017-10-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/10/29/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjh7xj8qj0002za0220umy5m2" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
 
 </section>
         

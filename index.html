@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -60,6 +60,53 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-Font-Metrics" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/05/18/Font-Metrics/" class="article-date">
+  <time datetime="2018-05-18T13:18:45.000Z" itemprop="datePublished">2018-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/18/Font-Metrics/">处理垂直居中与隐藏属性Font Metrics</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在优化公司内部UI组件时，遇到了一个问题：<br>我们的字体图标在跟文字放在一起时，如果不写专门的样式，看起来“没有对齐”，如图：<br><img src="/2018/05/18/Font-Metrics/01.png" title="示例1"><br>那要怎么做才能使图标跟文字垂直居中呢？<br>可能，最先想到的是在图标上添加<code>vertical-align: middle</code>：<br><img src="/2018/05/18/Font-Metrics/02.png" title="示例2"><br>呃，好像还是没有居中。根据经验，在文字上也加上<code>vertical-align: middle</code>：<br><img src="/2018/05/18/Font-Metrics/03.png" title="示例3"><br>诶，这下好像基本对齐了。<br>那么问题来了，是不是每次使用图标加文本都需要这样对齐呢？如果我的图标是出现在文本中间的，那又怎么办呢？这个图标跟文字真的绝对对齐了么？这样做是不是真的合理呢？<br>要解答这些问题，那得先从IFC说起……</p>
+<h2 id="IFC"><a href="#IFC" class="headerlink" title="IFC"></a>IFC</h2><p>IFC是什么？<br>在理解浮动以及清理浮动的原理时，相信很多人都接触过BFC（Block Formatting Contexts），定义了在“普通流”（Normal Flow）中，块级盒子（Block Box）组成上下文中的表现特性。而IFC，即Inline Formatting Context，顾名思义，定义了“行内盒子”（Inline Box）组成上下文中的表现特性，完整定义可见<a href="https://www.w3.org/TR/CSS22/visuren.html#comp-normal-flow" target="_blank" rel="external">CSS标准文档</a>。<br>根据IFC的描述，行内盒子（Inline Box）由“行内级元素”（Inline Level Elements）和“文本”（Contents）所组成，而行内盒子（Inline Box）水平排列所构成的一行矩形区域，叫做“行盒子”（Line Box）。<br>对应实际场景的话，字体图标是一个<code>display: inline-box</code>的行内级元素，而“中文”这两个字是另外一个行内级元素，把这两个元素形成的两个行内盒子放在一起，构成了一个行盒子。<br>除了<code>display: inline-box</code>的元素和文本是行内级元素外，display属性为“inline”，“inline-table”的元素以及像“img”、“input”、“video”等“替换元素”（Replaced Elements）都是行内级元素，但他们在行盒子中的高度计算方式不太相同。<br>替换元素的高度，等于它们本身的高度（含margin），而非替换元素的高度，则稍微有点复杂。<br>这里，就要引出我们故事的主角：字体度量（Font Metrics）。</p>
+<h2 id="Font-Metrics"><a href="#Font-Metrics" class="headerlink" title="Font Metrics"></a>Font Metrics</h2><p>简单来说，字体度量（Font Metrics）就是字体中的一系列参数，这些参数对于CSS来说是不可见的，所以我们需要借助一些工具来查看，比如<a href="https://fontforge.github.io/" target="_blank" rel="external">FontForge</a>。<br>拿中文字体常用的“微软雅黑”为例，可以看到这些参数：<br><img src="/2018/05/18/Font-Metrics/07.png" title="示例7"><br>这里展示了一些基本信息，主要包括：<br>Em Size：单位字体所含的点的数量。也就是说，假设我们给字体设置的大小为100px，那在微软雅黑中，每个点分得 100 / 2048 的像素值。<br>Ascent：字符baseline到字符顶部的距离；<br>Descent：字符baseline到字符底部的距离；<br>通过Em Size，我们也就可以求得Ascent与Descent在实际场景中的具体像素值。但是，这里的Ascent与Descent只是字体的通用属性，实际渲染出来，往往会在字体的上下增加一些空间，而且在不同操作系统环境中，还不尽相同，如下图：<br><img src="/2018/05/18/Font-Metrics/06.png" title="示例6"><br>这里的Win Ascent与Win Descent是Windows系统下的值，而HHead Ascent与HHead Descent是Mac OS系统下的值。<br>此外，Capital Height代表该字体大写字母的高度，X Height可以理解为字体的小写字母x的高度。<br>下面借用一张图，来更清晰的展示各个值之间的关系：<br><img src="/2018/05/18/Font-Metrics/08.png" title="示例8"><br>如果细心的话会发现，这里的Ascent + Descent值居然超过了Em Size？没错，这也就说明，在实际的场景中，当给一个字体设置100px大小时，它的高度并不一定等于100px，比如这里的话，就等于100 / 2048 * (2167 + 536) ≈ 132px。 </p>
+<h2 id="Line-Height"><a href="#Line-Height" class="headerlink" title="Line Height"></a>Line Height</h2><p>上面一节讲到了，字体实际渲染的高度与所设定的字体大小不一致。那么，对应到浏览器中，这个高度是什么高度呢？<br>想必，你已经猜到了，这个就是默认的行高，也就是当<code>line-height: normal</code>时的字体行高：<br><img src="/2018/05/18/Font-Metrics/11.png" title="示例11"><br>可以看到，这里的行高值跟我们之前计算出来的高度是一致的。或者，也可以这样理解：对于微软雅黑字体，设置<code>line-height: normal</code>大致等于<code>line-height: 1.32</code>。<br>当行高的值大于<code>line-height: normal</code>的值时，行间距（Leading）为正值；当行高的值小于<code>line-height: normal</code>的值时，行间距（Leading）为负值。一般情况下，应该避免<code>line-height</code>设置过小，否则行与行之间的文本可能会出现重叠。如果我们给部分的字体设置了背景色，由于背景色是覆盖文本的实际高度的，这样会造成视觉效果更糟糕：<br><img src="/2018/05/18/Font-Metrics/12.png" title="示例12"></p>
+<h2 id="Vertical-Align"><a href="#Vertical-Align" class="headerlink" title="Vertical Align"></a>Vertical Align</h2><p>对于<code>vertical-align</code>这个css属性，我曾经对它的实际作用苦恼了很久，比如：<code>middle</code>相对什么对齐？<code>top</code>和<code>text-top</code>又有什么区别？<code>baseline</code>究竟在哪里等等。那我们就结合官方定义，来一个个看一下：</p>
+<h3 id="baseline"><a href="#baseline" class="headerlink" title="baseline"></a>baseline</h3><p>官方描述是，将行内盒子的baseline与其父级盒子的baseline对齐；如果行内盒子没有baseline，就将它底部的margin边界与父级盒子baseline对齐。<br>从前面的章节可以看出，对于文本来说，它的baseline的高度，其实就是字体度量中Descent的高度。而对于替换元素，就如后半句的定义，以底部margin的边界来对齐。<br>那么问题来了，父级盒子的baseline在哪里呢？<br>官方解释说，每个行盒子里，最开始会有一个不可见的、零宽度的行内盒子，官方称它叫“strut”。这个strut，可以看成一个普通的文本，字体为父级盒子所设置的<code>font-family</code>属性。所以，<code>vertical-align</code>其实就是与这个隐藏的文本strut的对应参考线对齐。</p>
+<h3 id="middle"><a href="#middle" class="headerlink" title="middle"></a>middle</h3><p><code>vertical-align: middle</code>是大家在处理垂直居中时，最常用到的属性。然而，它有时候会出现很多怪异的场景，比如父级元素高度增加了。<br>还是先来看下官方定义：将行内盒子垂直方向的中点与父级盒子的baseline以上的小写字母x的一半的高度对齐。<br>简单来说，就是参照小写字母x的一半的那条线，将垂直高度的一半与之对齐。<br>由此可以想象，设置了<code>vertical-align: middle</code>的行内盒子的相对位置会下降，在高度不变的基础上，父级盒子便会高出它下降的这段高度。<br>根据定义，可以很简单的算出来：(XHeight / 2 + Descent) - [(Ascent + Descent) / 2 - Descent]，即<br>[(1106 / 2 + 536) - (2703 / 2 - 536)] * (100 / 2048) ≈ 13px。<br><img src="/2018/05/18/Font-Metrics/14.png" title="示例14"><br><img src="/2018/05/18/Font-Metrics/13.png" title="示例13"><br>此外，由于不同字体的Ascent / Descent的值不同，设置了<code>vertical-align: middle</code>后，未必从视觉上看，是一定对齐的。这也是文章最开始中，图标跟字体看起来，还没有完全对齐的原因之一。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>关于<code>top</code>、<code>text-top</code>、<code>bottom</code>、<code>text-bottom</code>等的区别，这里就不一一展开了，具体可以参考<a href="https://www.w3.org/TR/CSS22/visudet.html#propdef-vertical-align" target="_blank" rel="external">官方定义文档</a>，或者参考下图：<br><img src="/2018/05/18/Font-Metrics/15.png" title="示例15"></p>
+<h2 id="字体与文本对齐"><a href="#字体与文本对齐" class="headerlink" title="字体与文本对齐"></a>字体与文本对齐</h2><p>好了，绕了那么大一圈，现在我们回过来分析一下，最开始字体图标对齐的问题。<br>字体图标跟普通字体一样，同样可以用<a href="https://fontforge.github.io/" target="_blank" rel="external">FontForge</a>来查看：<br><img src="/2018/05/18/Font-Metrics/16.png" title="示例16"><br>可以看到，Descent的值为0。也就是说，字体图标的baseline的高度为0，从而使得与文本放在一起时，视觉上字体图标是偏上的，也就是第一张图所示的情况。<br>当对字体添加<code>vertical-align: middle</code>之后，根据定义，字体图标会和小写字母x对齐：<br><img src="/2018/05/18/Font-Metrics/17.png" title="示例17"><br>但如果是中文的话，默认情况下，中文文本并没有与小写字母x垂直居中对齐，自然与字体图标看上去也不是居中对齐的。<br><img src="/2018/05/18/Font-Metrics/02.png" title="示例2"><br>于是，当对中文文本设置了<code>vertical-align: middle</code>之后，由于两遍同时以自己的垂直中线与同一条线对齐，视觉上相对就对齐了。<br><img src="/2018/05/18/Font-Metrics/03.png" title="示例3"></p>
+<h3 id="果真如此吗？"><a href="#果真如此吗？" class="headerlink" title="果真如此吗？"></a>果真如此吗？</h3><p>如果眼见够尖会发现，其实此时的字体图标还是略微偏上了。<br>仔细检查一番，发现这个字体图标并没有撑满其内容区域：<br><img src="/2018/05/18/Font-Metrics/18.png" title="示例18"><br>这是因为，在制作该图形SVG的时候，线条并没有撑满画布（鞭打一番设计师）。修改之后，终于完全对齐了：<br><img src="/2018/05/18/Font-Metrics/19.png" title="示例19"></p>
+<h3 id="但是！！"><a href="#但是！！" class="headerlink" title="但是！！"></a>但是！！</h3><p>这样似乎还有问题：<br>其一，前面也提到过，设置<code>vertical-align: middle</code>，可能带来父级元素高度增加的副作用；<br>其二，每次使用时，都必须对字体图标和文本添加<code>vertical-align: middle</code>，十分繁琐；<br>其三，对于多段文本中穿插字体图标的情况，这一解决方案就不适用了。<br>在理想状态下，默认对齐时，字体图标与文本视觉上就应该是对齐的。<br>根据前文的分析，如果想要视觉上尽可能对齐，对字体图标设置一个合适的Descent是关键。<br>如果针对英文环境，这个相对容易一些：因为大写英文字母，全部在baseline之上，且高度相对一致。部分小写字母，会下探到baseline以下，如g、y，但总的字体高度也大致相同。参考字体生成平台<a href="https://icomoon.io/" target="_blank" rel="external">icomoon</a>，其默认的baseline高度为6.28%em，也就是对于1024个单位的字体，baseline设置为64个单位。<br><img src="/2018/05/18/Font-Metrics/20.png" title="示例20"><br>中文环境相对麻烦一些，一方面不同汉字相对baseline下探的高度略有差异，另一方面，还要确保仍然和英文字母对齐。这里，主要参考了一些主流框架，设置了12.5%em的baseline高度，视觉上基本能令人满意：<br><img src="/2018/05/18/Font-Metrics/21.png" title="示例21"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/05/18/Font-Metrics/" data-id="cjhesy83c00002j02a60uabhn" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-GraphQL-Relay2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -106,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/04/30/GraphQL-Relay2/" data-id="cjh7xj8qe0000za0214h3okt6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/04/30/GraphQL-Relay2/" data-id="cjhesy83h00022j02fgffrwij" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -176,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cjh7xj8qh0001za02vy191fqd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cjhesy83f00012j02ezzhwnzm" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -221,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjh7xj8qj0002za0220umy5m2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjhesy83i00032j02yj0bvwci" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -248,7 +295,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li></ul>
     </div>
   </div>
 
@@ -256,9 +303,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/05/18/Font-Metrics/">处理垂直居中与隐藏属性Font Metrics</a>
+          </li>
         
           <li>
             <a href="/2018/04/30/GraphQL-Relay2/">GraphQL &amp; Relay 实战</a>
@@ -285,7 +336,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

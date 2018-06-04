@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -94,11 +94,13 @@
 <h2 id="字体与文本对齐"><a href="#字体与文本对齐" class="headerlink" title="字体与文本对齐"></a>字体与文本对齐</h2><p>好了，绕了那么大一圈，现在我们回过来分析一下，最开始字体图标对齐的问题。<br>字体图标跟普通字体一样，同样可以用<a href="https://fontforge.github.io/" target="_blank" rel="external">FontForge</a>来查看：<br><img src="/2018/05/18/Font-Metrics/16.png" title="示例16"><br>可以看到，Descent的值为0。也就是说，字体图标的baseline的高度为0，从而使得与文本放在一起时，视觉上字体图标是偏上的，也就是第一张图所示的情况。<br>当对字体添加<code>vertical-align: middle</code>之后，根据定义，字体图标会和小写字母x对齐：<br><img src="/2018/05/18/Font-Metrics/17.png" title="示例17"><br>但如果是中文的话，默认情况下，中文文本并没有与小写字母x垂直居中对齐，自然与字体图标看上去也不是居中对齐的。<br><img src="/2018/05/18/Font-Metrics/02.png" title="示例2"><br>于是，当对中文文本设置了<code>vertical-align: middle</code>之后，由于两遍同时以自己的垂直中线与同一条线对齐，视觉上相对就对齐了。<br><img src="/2018/05/18/Font-Metrics/03.png" title="示例3"></p>
 <h3 id="果真如此吗？"><a href="#果真如此吗？" class="headerlink" title="果真如此吗？"></a>果真如此吗？</h3><p>如果眼见够尖会发现，其实此时的字体图标还是略微偏上了。<br>仔细检查一番，发现这个字体图标并没有撑满其内容区域：<br><img src="/2018/05/18/Font-Metrics/18.png" title="示例18"><br>这是因为，在制作该图形SVG的时候，线条并没有撑满画布（鞭打一番设计师）。修改之后，终于完全对齐了：<br><img src="/2018/05/18/Font-Metrics/19.png" title="示例19"></p>
 <h3 id="但是！！"><a href="#但是！！" class="headerlink" title="但是！！"></a>但是！！</h3><p>这样似乎还有问题：<br>其一，前面也提到过，设置<code>vertical-align: middle</code>，可能带来父级元素高度增加的副作用；<br>其二，每次使用时，都必须对字体图标和文本添加<code>vertical-align: middle</code>，十分繁琐；<br>其三，对于多段文本中穿插字体图标的情况，这一解决方案就不适用了。<br>在理想状态下，默认对齐时，字体图标与文本视觉上就应该是对齐的。<br>根据前文的分析，如果想要视觉上尽可能对齐，对字体图标设置一个合适的Descent是关键。<br>如果针对英文环境，这个相对容易一些：因为大写英文字母，全部在baseline之上，且高度相对一致。部分小写字母，会下探到baseline以下，如g、y，但总的字体高度也大致相同。参考字体生成平台<a href="https://icomoon.io/" target="_blank" rel="external">icomoon</a>，其默认的baseline高度为6.28%em，也就是对于1024个单位的字体，baseline设置为64个单位。<br><img src="/2018/05/18/Font-Metrics/20.png" title="示例20"><br>中文环境相对麻烦一些，一方面不同汉字相对baseline下探的高度略有差异，另一方面，还要确保仍然和英文字母对齐。这里，主要参考了一些主流框架，设置了12.5%em的baseline高度，视觉上基本能令人满意：<br><img src="/2018/05/18/Font-Metrics/21.png" title="示例21"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>IFC相关知识一直以来都是css中的一大难点，在面试中也经常会涉及。<br>可能有些情况，尝试了几下就解决了，比如本人一开始的做法，对字体图标和文本同时添加<code>vertical-align: middle</code>，但如果没有彻底弄清其中的原理的话，往往采用的并不是最佳方式，甚至还会遇到一些“奇怪”的问题，比如高度增加。<br>希望通过本文，能帮助大家理解IFC，同时下面也列出了一些很好的参考文章供大家参考。本人在写作中，也借助这些文章，进一步加深并巩固了相关知识。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align" target="_blank" rel="external">Deep dive CSS: font metrics, line-height and vertical-align</a><br><a href="http://www.zhangxinxu.com/wordpress/2009/11/css%E8%A1%8C%E9%AB%98line-height%E7%9A%84%E4%B8%80%E4%BA%9B%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%8F%8A%E5%BA%94%E7%94%A8/" target="_blank" rel="external">css行高line-height的一些深入理解及应用</a></p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/05/18/Font-Metrics/" data-id="cjhesy83c00002j02a60uabhn" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2018/05/18/Font-Metrics/" data-id="cji0hmbf70003qk02kx37rpq1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -153,7 +155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/04/30/GraphQL-Relay2/" data-id="cjhesy83h00022j02fgffrwij" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2018/04/30/GraphQL-Relay2/" data-id="cji0hmben0000qk02kaz0p1im" class="article-share-link">Share</a>
       
       
     </footer>
@@ -223,7 +225,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cjhesy83f00012j02ezzhwnzm" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2018/03/12/GraphQL-Relay/" data-id="cji0hmbeq0001qk02ru388bbz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -268,7 +270,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cjhesy83i00032j02yj0bvwci" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2017/10/29/hello-world/" data-id="cji0hmbf60002qk02ln2auz9c" class="article-share-link">Share</a>
       
       
     </footer>
@@ -303,7 +305,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
@@ -336,7 +338,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 John Doe<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

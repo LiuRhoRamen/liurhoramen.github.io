@@ -56,9 +56,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -93,8 +93,8 @@
 <h2 id="选型"><a href="#选型" class="headerlink" title="选型"></a>选型</h2><p>关于选型，前端实现拖放功能，无外乎几种：<br>1、通过样式布局+鼠标事件，采用此方案的插件如：<a href="https://github.com/Shopify/draggable" target="_blank" rel="external">@shopify/draggable</a><br>2、Canvas绘制，插件如：<a href="https://github.com/konvajs/konva" target="_blank" rel="external">konva</a><br>3、Drag&amp;Drop接口，插件如：<a href="https://github.com/bevacqua/dragula" target="_blank" rel="external">dragula</a></p>
 <p>经过一番研究，最终选择了原生Drag&amp;Drop的方案，原因如下：<br>1、原生拖放事件，顺应JS语言发展趋势；<br>2、兼容性符合项目要求；<br>3、在<a href="https://caniuse.com/#search=drag" target="_blank" rel="external">Can I use…</a>中有如下描述：<br><img src="/2019/05/21/drag-and-drop/01.png" title="插图-1"><br>最少的代码，最方便的方法，就是它了。</p>
 <h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><p>一个拖放行为，自然牵涉到两部分元素，即拖动元素和释放区域元素。<br>与之相关的事件总共有8个，其中绑定在拖动元素的事件有三个：<code>drag</code>、<code>dragstart</code>、<code>dragend</code>；<br>剩下5个事件绑定在释放区域元素上：<code>dragenter</code>、<code>dragover</code>、<code>dragleave</code>、<code>dragexit</code>、<code>drop</code>。<br>具体定义可以参考<a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" target="_blank" rel="external">mdn</a></p>
-<h2 id="定义可拖动元素"><a href="#定义可拖动元素" class="headerlink" title="定义可拖动元素"></a>定义可拖动元素</h2><p>浏览器中，有三种元素，默认是可以被拖动的，它们是：<br>1、被选中后的文本；<br>2、图片；<br>3、链接<br>其他元素要转成可拖动元素，必须添加<code>draggable=&quot;true&quot;</code>，如：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;div draggable=<span class="string">"true"</span>&gt;&lt;/div&gt;</div></pre></td></tr></table></figure></p>
-<p><strong>注意：</strong>这里不能略写，如写成：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;div draggable&gt;&lt;/div&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="定义可拖动元素"><a href="#定义可拖动元素" class="headerlink" title="定义可拖动元素"></a>定义可拖动元素</h2><p>浏览器中，有三种元素，默认是可以被拖动的，它们是：<br>1、被选中后的文本；<br>2、图片；<br>3、链接<br>其他元素要转成可拖动元素，必须添加<code>draggable=&quot;true&quot;</code>，如：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;div draggable=<span class="string">"true"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong>这里不能略写，如写成：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;div draggable&gt;<span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div></pre></td></tr></table></figure></p>
 <p>是无效的。</p>
 <h2 id="定义可被释放区域"><a href="#定义可被释放区域" class="headerlink" title="定义可被释放区域"></a>定义可被释放区域</h2><p>要使一块元素可被释放，首先需要绑定<code>dragenter</code>或<code>dragover</code>事件，然后阻止事件，如下：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;div ondragover=<span class="string">"return false"</span>&gt;</div><div class="line">&lt;div ondragover=<span class="string">"event.preventDefault()"</span>&gt;</div></pre></td></tr></table></figure></p>
 <p>因为，这两个事件的默认行为就是“不触发”<code>drop</code>事件，所以要定义成可被释放区域，就反其道而行之即可。</p>
@@ -119,7 +119,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/21/drag-and-drop/" data-id="cjvywpzhj0002sz02awfop3n1" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2019/05/21/drag-and-drop/" data-id="ck9z8ijfy0005jk02cndueup1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -128,9 +128,18 @@
     
 <nav id="article-nav">
   
+    <a href="/2020/04/15/Custom-Lint/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          开发ESLint &amp; Stylelint插件实践
+        
+      </div>
+    </a>
+  
   
     <a href="/2018/07/23/Dev-Experience-Sharing/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">浅谈前端业务开发中的经验与感想</div>
     </a>
   
@@ -155,7 +164,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li></ul>
     </div>
   </div>
 
@@ -163,9 +172,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/15/Custom-Lint/">开发ESLint &amp; Stylelint插件实践</a>
+          </li>
         
           <li>
             <a href="/2019/05/21/drag-and-drop/">Drag&amp;Drop 拖放API简介以及在React中实践</a>
@@ -183,10 +196,6 @@
             <a href="/2018/05/18/Font-Metrics/">处理垂直居中与隐藏属性Font Metrics</a>
           </li>
         
-          <li>
-            <a href="/2018/04/30/GraphQL-Relay2/">GraphQL &amp; Relay 实战</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -199,8 +208,8 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2019 John Doe<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      &copy; 2020 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

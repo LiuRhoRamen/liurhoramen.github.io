@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>GraphQL &amp; Relay 实战 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前段时间，分享了一篇GraphQL &amp;amp; Relay 初探，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。 架构&amp;amp;角色分工对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GraphQL &amp; Relay 实战">
+<meta property="og:url" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前段时间，分享了一篇GraphQL &amp;amp; Relay 初探，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。 架构&amp;amp;角色分工对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/01.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/02.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/03.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/05.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/04.png">
+<meta property="og:updated_time" content="2018-05-15T17:05:31.254Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GraphQL &amp; Relay 实战">
+<meta name="twitter:description" content="前段时间，分享了一篇GraphQL &amp;amp; Relay 初探，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。 架构&amp;amp;角色分工对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组">
+<meta name="twitter:image" content="http://yoursite.com/2018/04/30/GraphQL-Relay2/01.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Søk"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-GraphQL-Relay2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/30/GraphQL-Relay2/" class="article-date">
+  <time datetime="2018-04-30T12:04:59.000Z" itemprop="datePublished">2018-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      GraphQL &amp; Relay 实战
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前段时间，分享了一篇<a href="https://blog.liurhoramen.me/2018/03/12/GraphQL-Relay/" target="_blank" rel="external">GraphQL &amp; Relay 初探</a>，主要介绍了 GraphQL 的设计思想和 Relay 的基本应用。目前，笔者在实际项目中应用 GraphQL+Relay 已经有段时间了，并发布了一个正式版本。整个过程中，踩了不少坑，也摸索出了一些经验，特此做一下总结分享。</p>
+<h2 id="架构-amp-角色分工"><a href="#架构-amp-角色分工" class="headerlink" title="架构&amp;角色分工"></a>架构&amp;角色分工</h2><p>对于架构设计与角色分工，一定程度上，依赖于团队人员的配置。由于我们团队主要由后端研发组成，前端人数有限，所以还是以“前”和“后”为分界来分工，即前端负责纯 Web 端部分的开发，后端来实现后端逻辑以及 GraphQL 层的封装。具体而言，每个后端研发负责一个或多个业务模块，每个模块都微服务化，并起一个 GraphQL 或 RESTful API 服务。后端同时还负责维护一个 API Gateway 模块，用来转发前端过来的请求、鉴权、统一错误处理等工作。整个架构如下图：<br><img src="/2018/04/30/GraphQL-Relay2/01.png" title="角色分工架构图 1"><br>如果对于前后端人员配置均等或者“大前端”团队来说，就比较适合按组件/模块来分工了。也就是说，前端负责 Web 端开发以及 GraphQL 的封装，后端则负责设计数据库并提供后端业务操作接口。架构图可以设计成这样：<br><img src="/2018/04/30/GraphQL-Relay2/02.png" title="角色分工架构图 2"><br>这样设计的好处，可以最大程度降低前后端之间用于沟通、联调上的时间成本，使得开发效率最大化。</p>
+<h2 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h2><p>由于人员限制，采用了上面提到的第一种，后端微服务化的架构设计，便不可避免的存在一些沟通成本。对此，结合社区已有的解决方案，设计了一个半自动的工作流，如下图：<br><img src="/2018/04/30/GraphQL-Relay2/03.png" title="工作流"><br>其中，核心点在于，脚本自动化地获取各 GraphQL 微服务的 Schema，然后做合并，汇总成一个总的 Schema。这个总的 Schema 主要有三个作用：<br>1、供 Relay 框架编译 Relay 组件；<br>2、前端 Mock 服务；<br>3、提供 API 文档（含类型校验）这样一来，只要后端开发完成了 schema 的定义，并运行 Server（可以暂时只是假数据），前端即可以一键跑起 Mock 服务，开始开发前端组件，而且后端任何的变更，也可以及时同步到前端。具体实现上，采用了<a href="https://www.apollographql.com/docs/graphql-tools/" target="_blank" rel="external">Apollo graphql-tools</a>的<a href="https://www.apollographql.com/docs/graphql-tools/remote-schemas.html" target="_blank" rel="external">remote schema</a>和<a href="https://www.apollographql.com/docs/graphql-tools/schema-stitching.html" target="_blank" rel="external">schema stitching</a>工具完成微服务 schema 的获取与合并。同时，使用<a href="https://www.apollographql.com/docs/graphql-tools/mocking.html" target="_blank" rel="external">Mocking</a>根据生成的 Schema 来运行 Mock 服务。</p>
+<p>附：Schema 获取与合并代码参考</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> schemaPath = path.resolve(__dirname, <span class="string">"../schema/schema.graphql"</span>);</div><div class="line"><span class="keyword">const</span> urls = <span class="built_in">Object</span>.keys(APIGraphQL).map(<span class="function"><span class="params">item</span> =&gt;</span> APIGraphQL[item]); <span class="comment">// APIGraphQL记录微服务地址</span></div><div class="line"><span class="keyword">const</span> links = urls.map(<span class="function"><span class="params">uri</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">let</span> link = <span class="keyword">new</span> HttpLink(&#123; uri, fetch &#125;);</div><div class="line">  link = setContext(<span class="function">(<span class="params">request, previousContext</span>) =&gt;</span> (&#123;</div><div class="line">    headers: &#123;&#125;</div><div class="line">  &#125;)).concat(link);</div><div class="line">  <span class="keyword">return</span> link;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="keyword">const</span> main = <span class="keyword">async</span> () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> schemas = <span class="keyword">await</span> <span class="built_in">Promise</span>.all(links.map(<span class="function"><span class="params">link</span> =&gt;</span> introspectSchema(link)));</div><div class="line"></div><div class="line">  <span class="comment">// 在根查询节点添加一个id字段，解决Relay框架限制</span></div><div class="line">  <span class="keyword">const</span> HackSchemaForRelay = makeExecutableSchema(&#123;</div><div class="line">    typeDefs: <span class="string">`</span></div><div class="line"><span class="string">      type HackForRelay &#123;</span></div><div class="line"><span class="string">        id: ID!</span></div><div class="line"><span class="string">      &#125;</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">      type Query &#123;</span></div><div class="line"><span class="string">        _hackForRelayById(id: ID!): HackForRelay</span></div><div class="line"><span class="string">      &#125;</span></div><div class="line"><span class="string">    `</span></div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  fs.writeFileSync(</div><div class="line">    schemaPath,</div><div class="line">    printSchema(</div><div class="line">      mergeSchemas(&#123;</div><div class="line">        schemas: [HackSchemaForRelay, ...schemas]</div><div class="line">      &#125;)</div><div class="line">    )</div><div class="line">  );</div><div class="line"></div><div class="line">  <span class="built_in">console</span>.log(<span class="string">"Wrote "</span> + schemaPath);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">main();</div></pre></td></tr></table></figure>
+<p>在合并 Schema 时，有个问题需要注意：不同微服务间的 Schema 不能存在相同名称的 Type，否则在合并中会被同名的 Type 覆盖。在笔者开发中，是通过与后端研发约定一个命名规则来规避这类问题的。后续优化，可以考虑自动添加微服务名称作为前缀以解决此类问题。</p>
+<h2 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h2><p>以下为项目目录结构以供参考：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">├── package.json</div><div class="line">├── publish.sh</div><div class="line">├── src</div><div class="line">│   ├── index.ejs</div><div class="line">│   ├── index.js</div><div class="line">│   ├── index.less</div><div class="line">│   ├── js</div><div class="line">│   │   ├── __generated__</div><div class="line">│   │   ├── api</div><div class="line">│   │   ├── app.js</div><div class="line">│   │   ├── assets</div><div class="line">│   │   ├── common</div><div class="line">│   │   ├── components</div><div class="line">│   │   ├── config</div><div class="line">│   │   ├── mutations</div><div class="line">│   │   ├── routes.js</div><div class="line">│   │   ├── service</div><div class="line">│   │   └── utils</div><div class="line">│   ├── public</div><div class="line">│   │   ├── favicon.ico</div><div class="line">│   │   └── fonts</div><div class="line">│   ├── schema</div><div class="line">│   │   ├── mock</div><div class="line">│   │   └── schema.graphql</div><div class="line">│   ├── scripts</div><div class="line">│   │   └── updateSchema.js</div><div class="line">│   └── theme.config.js</div><div class="line">├── webpack.config.creator.js</div><div class="line">├── webpack.config.js</div><div class="line">└── yarn.lock</div></pre></td></tr></table></figure>
+<p>其中，<strong>src/scripts/updateSchema.js</strong>是获取与合并 schema 的脚本，Schema 与 Mock 服务一并放在<strong>src/schema</strong>目录中。其余前端组件、包含 Relay 组件，全部放在<strong>src/js</strong>目录下。一个前端组件可以创建一个目录，目录由至少三个文件组成：纯 React 组件、组件的样式以及 Relay 的封装 Container，如下：<br><img src="/2018/04/30/GraphQL-Relay2/05.png" title="项目目录"><br>其中的 ProjectListContainer.js 部分代码参考：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> &#123; createRefetchContainer, graphql &#125; <span class="keyword">from</span> <span class="string">"react-relay"</span>;</div><div class="line"><span class="keyword">import</span> ProjectList <span class="keyword">from</span> <span class="string">"./ProjectList"</span>;</div><div class="line"></div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> createRefetchContainer(</div><div class="line">  ProjectList,</div><div class="line">  &#123;</div><div class="line">    projectInfoList: graphql<span class="string">`</span></div><div class="line"><span class="string">      fragment ProjectListContainer_projectInfoList on ProjectInfo</span></div><div class="line"><span class="string">        @relay(plural: true) &#123;</span></div><div class="line"><span class="string">        createdTime</span></div><div class="line"><span class="string">        descInfo</span></div><div class="line"><span class="string">        jobProfileInfo &#123;</span></div><div class="line"><span class="string">          ...</span></div><div class="line"><span class="string">        &#125;</span></div><div class="line"><span class="string">        ...</span></div><div class="line"><span class="string">      &#125;</span></div><div class="line"><span class="string">    `</span></div><div class="line">  &#125;,</div><div class="line">  graphql<span class="string">`</span></div><div class="line"><span class="string">    query ProjectListContainer_RefetchQuery &#123;</span></div><div class="line"><span class="string">      projectInfoList &#123;</span></div><div class="line"><span class="string">        ...ProjectListContainer_projectInfoList</span></div><div class="line"><span class="string">      &#125;</span></div><div class="line"><span class="string">    &#125;</span></div><div class="line"><span class="string">  `</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><p>关于前端路由，Relay 官方文档中在<a href="https://facebook.github.io/relay/docs/en/routing.html" target="_blank" rel="external">路由</a>章节中提到了一些解决方案，但不是很详细。笔者在项目中，采用的是相对比较推荐的<a href="https://github.com/4Catalyzer/found-relay" target="_blank" rel="external">Found Relay</a>。</p>
+<p>部分配置代码参考：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> routesConf = makeRouteConfig(</div><div class="line">  &lt;Route&gt;</div><div class="line">    &lt;Route path=<span class="string">"login"</span> Component=&#123;Login&#125; /&gt;</div><div class="line">    &lt;Route</div><div class="line">      path=<span class="string">"logout"</span></div><div class="line">      render=&#123;() =&gt; &#123;</div><div class="line">        api.logout(&#123; <span class="attr">payload</span>: &#123;&#125;, <span class="attr">api</span>: <span class="string">""</span> &#125;);</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RedirectException(&#123; <span class="attr">pathname</span>: <span class="string">"/login"</span> &#125;);</div><div class="line">      &#125;&#125;</div><div class="line">    /&gt;</div><div class="line">    &lt;Route path=<span class="string">"/"</span> Component=&#123;MainLayout&#125;&gt;</div><div class="line">      &lt;Route path=<span class="string">"exception/:statusCode"</span> Component=&#123;Exception&#125; /&gt;</div><div class="line">      &lt;Redirect <span class="keyword">from</span>=<span class="string">"/"</span> to=<span class="string">"/project"</span> /&gt;</div><div class="line">      &lt;Route</div><div class="line">        path=<span class="string">"project"</span></div><div class="line">        Component=&#123;ProjectListContainer&#125;</div><div class="line">        query=&#123;ProjectListQuery&#125;</div><div class="line">        prepareVariables=&#123;params =&gt; (&#123;&#125;)&#125;</div><div class="line">      &gt;</div><div class="line">        &lt;Route</div><div class="line">          path=<span class="string">"job/:projectId"</span></div><div class="line">          Component=&#123;JobListContainer&#125;</div><div class="line">          query=&#123;JobListQuery&#125;</div><div class="line">        /&gt;</div><div class="line">      &lt;<span class="regexp">/Route&gt;</span></div><div class="line"><span class="regexp">    &lt;/</span>Route&gt;</div><div class="line">  &lt;<span class="regexp">/Route&gt;</span></div><div class="line"><span class="regexp">);</span></div><div class="line"><span class="regexp"></span></div><div class="line"><span class="regexp">const Router = createFarceRouter(&#123;</span></div><div class="line"><span class="regexp">  historyProtocol: new BrowserProtocol(),</span></div><div class="line"><span class="regexp">  historyMiddlewares: [queryMiddleware],</span></div><div class="line"><span class="regexp">  routeConfig: routesConf,</span></div><div class="line"><span class="regexp"></span></div><div class="line"><span class="regexp">  render: createRender(&#123;</span></div><div class="line"><span class="regexp">    renderError: (&#123; error &#125;) =&gt; &#123;</span></div><div class="line"><span class="regexp">      const &#123; status &#125; = error;</span></div><div class="line"><span class="regexp">      if (status) &#123;</span></div><div class="line"><span class="regexp">        throw new RedirectException(&#123; pathname: `/</span>exception/$&#123;status&#125;<span class="string">` &#125;);</span></div><div class="line"><span class="string">      &#125;</span></div><div class="line"><span class="string">    &#125;</span></div><div class="line"><span class="string">  &#125;)</span></div><div class="line"><span class="string">&#125;);</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">const mountNode = document.getElementById("root");</span></div><div class="line"><span class="string">ReactDOM.render(&lt;Router resolver=&#123;new Resolver(environment)&#125; /&gt;, mountNode);</span></div></pre></td></tr></table></figure>
+<p>在结合 Relay 框架使用路由过程中，有几点需要注意：<br>1、由于 Relay 组件只有请求到了后端数据才会开始渲染，所以尽量不要将整个页面作为 Relay 组件，否则切换路由的时候，会产生类似“全屏刷新”的效果，影响用户体验，如下图：<br><img src="/2018/04/30/GraphQL-Relay2/04.png" title="路由"><br>2、根据实际情况，选择封装成<strong>QueryRenderer</strong>或<strong>Fragment Container</strong>。比如，某个弹窗内的表格数据，可以考虑使用<strong>QueryRenderer</strong>，在触发了打开弹窗操作后，再由组件主动请求数据，而非<strong>Fragment Container</strong>，由路由 Container 一口气拉到所有数据，这样会影响页面加载速度，而且也没有必要；<br>3、在通常的单页应用里，除非是有切换用户的功能，一般 Relay 的 environment 应只在一处配置，所有 Relay 组件共享。</p>
+<p>（关于 QueryRenderer、Fragment Container、environment 可以参考<a href="http://facebook.github.io/relay/docs/en/relay-environment.html" target="_blank" rel="external">Relay 官方文档</a>）</p>
+<h2 id="组件封装"><a href="#组件封装" class="headerlink" title="组件封装"></a>组件封装</h2><p>Route 所接受的组件都是<strong>Fragment</strong>，也就是 Relay 框架所提供的 Fragment Container、Refetch Container 和 Pagintion Container。这三种类型的组件，Relay 本身提供的方法使用起来已经比较简洁方便了。但是，如果想要封装一个可以自己单独获取数据的Relay组件，也就是使用<strong>QueryRenderer</strong>，官方却没有提供一个封装函数。所以，我们可以自己来写一个：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> &#123; QueryRenderer, graphql &#125; <span class="keyword">from</span> <span class="string">"react-relay"</span>;</div><div class="line"><span class="keyword">import</span> &#123; message, Spin &#125; <span class="keyword">from</span> <span class="string">"antd"</span>;</div><div class="line"><span class="keyword">import</span> environment <span class="keyword">from</span> <span class="string">"../../config/environment"</span>;</div><div class="line"></div><div class="line"><span class="keyword">const</span> createContainer = (&#123;</div><div class="line">  query = <span class="string">""</span>,</div><div class="line">  variables = &#123;&#125;,</div><div class="line">  propsName = <span class="string">""</span></div><div class="line">&#125;) =&gt; <span class="function"><span class="params">Target</span> =&gt;</span></div><div class="line">  <span class="class"><span class="keyword">class</span> <span class="title">RelayContainer</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</div><div class="line">    render() &#123;</div><div class="line">      <span class="keyword">return</span> (</div><div class="line">        &lt;QueryRenderer</div><div class="line">          environment=&#123;environment&#125;</div><div class="line">          query=&#123;query&#125;</div><div class="line">          variables=&#123;variables&#125;</div><div class="line">          render=&#123;(&#123; error, props &#125;) =&gt; &#123;</div><div class="line">            <span class="keyword">if</span> (error) &#123;</div><div class="line">              <span class="keyword">return</span> <span class="literal">null</span>;</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (props) &#123;</div><div class="line">              <span class="keyword">return</span> &lt;Target &#123;...this.props&#125; data=&#123;props[propsName]&#125; /&gt;;</div><div class="line">            &#125;</div><div class="line">            return &lt;Spin spinning=&#123;true&#125; /&gt;;</div><div class="line">          &#125;&#125;</div><div class="line">        /&gt;</div><div class="line">      );</div><div class="line">    &#125;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">export &#123; createContainer &#125;;</div></pre></td></tr></table></figure>
+<p>在具体使用的时候，可以结合ES7的Decorator，非常简洁：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">@createContainer(&#123;</div><div class="line">  query: graphql<span class="string">`</span></div><div class="line"><span class="string">    ...</span></div><div class="line"><span class="string">  `</span>,</div><div class="line">  propsName: <span class="string">"propsName"</span></div><div class="line">&#125;)</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyComponent</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="keyword">static</span> defaultProps = &#123;</div><div class="line">    ...</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  render() &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>GraphQL+Relay框架的设计思路非常好，也确实能在项目后期迭代中，解放不少生产力。但是，在前期的脚手架搭建以及工作流的梳理、前后端人员配合上，需要多花一点的时间来设计一下。希望本文能给准备使用GraphQL的同学扫清一些障碍。<br>此外，任何框架和技术都要切忌为了用而用，还是要根据实际需求来决定最佳实践。比如，即使是一个Relay的项目，也并不一定要求所有的API都是GraphQL，依然可以结合RESTful API，并不会有什么问题。所以，适合自己的才是最好的！<br>最后，有任何问题，欢迎留言讨论，一起学习。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/04/30/GraphQL-Relay2/" data-id="clyimvz2t000223hvq8onnl5b" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/05/18/Font-Metrics/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          处理垂直居中与隐藏属性Font Metrics
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/12/GraphQL-Relay/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GraphQL &amp; Relay 初探</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Arkiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/07/">July 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Siste innlegg</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/07/08/sentry-watch/">Sentry 集成与 NestJS 实践</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/15/Custom-Lint/">开发ESLint &amp; Stylelint插件实践</a>
+          </li>
+        
+          <li>
+            <a href="/2019/05/21/drag-and-drop/">Drag&amp;Drop 拖放API简介以及在React中实践</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/23/Dev-Experience-Sharing/">浅谈前端业务开发中的经验与感想</a>
+          </li>
+        
+          <li>
+            <a href="/2018/07/14/Font-Icon-Vertical-Align-Fix/">记一次解决字体图标垂直对齐问题的过程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2024 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
